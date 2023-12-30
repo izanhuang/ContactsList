@@ -14,7 +14,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +28,7 @@ fun ContactCard(
     fullName: String, phoneNumber: String, gender: Gender, modifier: Modifier = Modifier
 ) {
     val avatar =
-        if (gender == Gender.Female) R.drawable.round_avatar_female_24 else R.drawable.round_avatar_male_24
+        if (gender == Gender.FEMALE) R.drawable.round_avatar_female_24 else R.drawable.round_avatar_male_24
 
     Card(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -44,39 +43,25 @@ fun ContactCard(
                 Icon(
                     painter = painterResource(avatar),
                     contentDescription = stringResource(R.string.avatar),
-                    modifier = Modifier.size(64.dp).padding(12.dp)
+                    modifier = Modifier
+                        .size(64.dp)
+                        .padding(12.dp)
                 )
             }
             Spacer(Modifier.size(8.dp))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.outline_badge_24),
-                        contentDescription = stringResource(
-                            R.string.full_name
-                        )
-                    )
-                    Spacer(Modifier.size(8.dp))
-                    Text(
-                        text = fullName,
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        Icons.Filled.Phone,
-                        contentDescription = stringResource(R.string.phone),
-                    )
-                    Spacer(Modifier.size(8.dp))
-                    Text(text = phoneNumber, style = MaterialTheme.typography.headlineSmall)
-                }
+                IconAndText(
+                    drawableId = R.drawable.outline_badge_24,
+                    descriptionId = R.string.full_name,
+                    text = fullName
+                )
+                IconAndText(
+                    imageVector = Icons.Filled.Phone,
+                    descriptionId = R.string.phone,
+                    text = phoneNumber
+                )
             }
         }
     }
 }
+

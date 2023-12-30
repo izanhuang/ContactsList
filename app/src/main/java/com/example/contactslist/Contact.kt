@@ -5,5 +5,5 @@ data class Contact(val firstName: String, val lastName: String, val phoneNumber:
 }
 
 enum class Gender {
-    Female, Male
+    FEMALE, MALE
 }
