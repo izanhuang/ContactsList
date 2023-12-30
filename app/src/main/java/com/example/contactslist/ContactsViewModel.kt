@@ -13,8 +13,7 @@ class ContactsViewModel() : ViewModel() {
         _contacts.value = sortAlphabetically(_contacts.value)
     }
 
-    fun addContact(firstName: String, lastName: String, phoneNumber: String, gender: Gender): Int {
-        val newContact = Contact(firstName, lastName, phoneNumber, gender)
+    fun addContact(newContact: Contact): Int {
         val listWithNewContact = _contacts.value + newContact
         _contacts.value = sortAlphabetically(listWithNewContact)
 

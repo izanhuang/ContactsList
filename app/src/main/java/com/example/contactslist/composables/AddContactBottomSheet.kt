@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.contactslist.Gender
+import com.example.contactslist.Contact
 import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -19,7 +19,7 @@ fun AddContactBottomSheet(
     sheetState: SheetState,
     scope: CoroutineScope,
     updateShowBottomSheet: (Boolean) -> Unit,
-    addContact: (String, String, String, Gender) -> Unit,
+    addContact: (Contact) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ModalBottomSheet(

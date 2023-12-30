@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.contactslist.Contact
 import com.example.contactslist.Gender
 import com.example.contactslist.R
 import kotlinx.coroutines.CoroutineScope
@@ -35,16 +36,16 @@ fun AddContactForm(
     sheetState: SheetState,
     scope: CoroutineScope,
     updateShowBottomSheet: (Boolean) -> Unit,
-    addContact: (String, String, String, Gender) -> Unit,
+    addContact: (Contact) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var firstName: String by remember { mutableStateOf("") }
-    var lastName: String by remember { mutableStateOf("") }
-    var phoneNumber: String by remember { mutableStateOf("") }
-    var gender: Gender by remember { mutableStateOf(Gender.MALE) }
+    var newContact by remember { mutableStateOf(Contact("", "", "", Gender.MALE)) }
 
     val avatar =
-        if (gender == Gender.MALE) R.drawable.round_avatar_male_24 else R.drawable.round_avatar_female_24
+        if (newContact.gender == Gender.MALE) R.drawable.round_avatar_male_24 else R.drawable.round_avatar_female_24
+    val isValidPhoneNumber = true
+    val canSubmit =
+        newContact.firstName.isNotEmpty() && newContact.lastName.isNotEmpty() && isValidPhoneNumber && newContact.gender.javaClass == Gender::class.java
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -57,14 +58,18 @@ fun AddContactForm(
             )
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
-                    value = firstName,
-                    onValueChange = { value -> firstName = value },
+                    value = newContact.firstName,
+                    onValueChange = { value ->
+                        newContact = newContact.copy(firstName = value.trimStart().trimEnd())
+                    },
                     label = { Text("First name") },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
-                    value = lastName,
-                    onValueChange = { value -> lastName = value },
+                    value = newContact.lastName,
+                    onValueChange = { value ->
+                        newContact = newContact.copy(lastName = value.trimStart().trimEnd())
+                    },
                     label = { Text("Last name") },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -72,15 +77,13 @@ fun AddContactForm(
         }
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Icon(
-                imageVector = Icons.Filled.Phone,
-                contentDescription = stringResource(
+                imageVector = Icons.Filled.Phone, contentDescription = stringResource(
                     id = R.string.phone
-                ),
-                modifier = Modifier.padding(top = 8.dp)
+                ), modifier = Modifier.padding(top = 8.dp)
             )
             OutlinedTextField(
-                value = phoneNumber,
-                onValueChange = { value -> phoneNumber = value },
+                value = newContact.phoneNumber,
+                onValueChange = { value -> newContact = newContact.copy(phoneNumber = value.trimStart().trimEnd()) },
                 label = { Text("Phone number") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -94,29 +97,24 @@ fun AddContactForm(
                 contentDescription = stringResource(R.string.avatar)
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(
-                    selected = gender == Gender.MALE,
-                    onClick = { gender = Gender.MALE }
-                )
+                RadioButton(selected = newContact.gender == Gender.MALE, onClick = { newContact = newContact.copy(gender = Gender.MALE) })
                 Text("Male")
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(
-                    selected = gender == Gender.FEMALE,
-                    onClick = { gender = Gender.FEMALE }
-                )
+                RadioButton(selected = newContact.gender == Gender.FEMALE,
+                    onClick = { newContact = newContact.copy(gender = Gender.FEMALE) })
                 Text(text = "Female")
             }
         }
         Button(
             onClick = {
-                addContact(firstName, lastName, phoneNumber, gender)
+                addContact(newContact)
                 scope.launch { sheetState.hide() }.invokeOnCompletion {
                     if (!sheetState.isVisible) {
                         updateShowBottomSheet(false)
                     }
                 }
-            }
+            }, enabled = canSubmit
         ) {
             Text("Add")
         }

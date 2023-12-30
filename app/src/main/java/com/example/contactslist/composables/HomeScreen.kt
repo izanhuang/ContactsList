@@ -91,13 +91,8 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
                 sheetState = sheetState,
                 scope = scope,
                 updateShowBottomSheet = { value -> showBottomSheet = value },
-                addContact = { firstName, lastName, phoneNumber, gender ->
-                    val newContactIndex = viewModel.addContact(
-                        firstName,
-                        lastName,
-                        phoneNumber,
-                        gender
-                    )
+                addContact = { newContact ->
+                    val newContactIndex = viewModel.addContact(newContact)
                     scope.launch {
                         delay(500)
                         contactsListState.animateScrollToItem(newContactIndex)
