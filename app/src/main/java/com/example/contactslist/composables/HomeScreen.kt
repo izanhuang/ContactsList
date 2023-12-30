@@ -39,6 +39,12 @@ import com.example.contactslist.R
 * - Once done and created/saved, close bottom sheet, and scroll to it in list
 */
 
+/**
+ * To do
+ * - Phone number regex/formatting, char limit
+ * - Add padding bottom to "Add" contact button
+ */
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,11 +75,20 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
         Column(modifier.padding(innerPadding)) {
             ContactList(contacts = contacts)
         }
-        AddContactBottomSheet(
-            showBottomSheet = showBottomSheet,
-            sheetState = sheetState,
-            scope = scope,
-            updateShowBottomSheet = { isShown -> showBottomSheet = isShown }
-        )
+        if (showBottomSheet) {
+            AddContactBottomSheet(
+                sheetState = sheetState,
+                scope = scope,
+                updateShowBottomSheet = { value -> showBottomSheet = value },
+                addContact = { firstName, lastName, phoneNumber, gender ->
+                    viewModel.addContact(
+                        firstName,
+                        lastName,
+                        phoneNumber,
+                        gender
+                    )
+                }
+            )
+        }
     }
 }

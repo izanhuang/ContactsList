@@ -27,7 +27,10 @@ import com.example.contactslist.R
 
 @Composable
 fun ContactCard(
-    fullName: String, phoneNumber: String, gender: Gender, modifier: Modifier = Modifier
+    fullName: String,
+    phoneNumber: String,
+    gender: Gender,
+    modifier: Modifier = Modifier
 ) {
     val avatar =
         if (gender == Gender.FEMALE) R.drawable.round_avatar_female_24 else R.drawable.round_avatar_male_24
@@ -38,7 +41,7 @@ fun ContactCard(
     ) {
         Row(
             verticalAlignment = Alignment.Top,
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(8.dp, 2.dp, 8.dp, 10.dp)
         ) {
             Card(
                 shape = CircleShape,
@@ -49,11 +52,11 @@ fun ContactCard(
                     painter = painterResource(avatar),
                     contentDescription = stringResource(R.string.avatar),
                     modifier = Modifier
-                        .size(64.dp)
+                        .size(68.dp)
                         .padding(12.dp)
                 )
             }
-            Spacer(Modifier.size(8.dp))
+            Spacer(Modifier.size(16.dp))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 IconAndText(
                     drawableId = R.drawable.outline_badge_24,
