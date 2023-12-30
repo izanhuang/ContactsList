@@ -59,7 +59,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = viewModel()) {
     val contacts by viewModel.contacts.collectAsState()
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     val contactsListState = rememberLazyListState()
 
