@@ -32,7 +32,7 @@ fun ContactCard(
 
     Card(modifier = modifier.fillMaxWidth()) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
             modifier = Modifier.padding(8.dp)
         ) {
             Card(

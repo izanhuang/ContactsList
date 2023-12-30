@@ -1,18 +1,30 @@
 package com.example.contactslist.composables
 
-import androidx.compose.foundation.layout.Box
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.example.contactslist.ContactsViewModel
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.contactslist.ContactsViewModel
+import com.example.contactslist.R
 
 /*
 * List of contacts
@@ -27,18 +39,41 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 * - Once done and created/saved, close bottom sheet, and scroll to it in list
 */
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = viewModel()) {
     val contacts by viewModel.contacts.collectAsState()
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
 
-    Box(modifier = modifier.fillMaxSize()) {
-        Column {
-            Text(
-                text = "Contacts",
-                style = MaterialTheme.typography.displaySmall,
-                modifier = Modifier.padding(8.dp)
-            )
+    Scaffold(
+        topBar = {
+            TopAppBar(title = {
+                Text(
+                    text = "Contacts",
+                    style = MaterialTheme.typography.displaySmall,
+                )
+            })
+        },
+        floatingActionButton = {
+            Button(onClick = { showBottomSheet = true }) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = stringResource(R.string.add_contact)
+                )
+            }
+        }
+    ) { innerPadding ->
+        Column(modifier.padding(innerPadding)) {
             ContactList(contacts = contacts)
         }
+        AddContactBottomSheet(
+            showBottomSheet = showBottomSheet,
+            sheetState = sheetState,
+            scope = scope,
+            updateShowBottomSheet = { isShown -> showBottomSheet = isShown }
+        )
     }
 }
