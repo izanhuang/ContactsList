@@ -7,12 +7,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,6 +46,10 @@ import kotlinx.coroutines.launch
  * To do
  * - Adding of empty contact/validations
  * - Phone number regex/formatting, char limit
+ */
+
+/**
+ * Questions
  * - Add padding bottom to "Add" contact button
  * - Use IconAndOutlinedTextField composable?
  */
@@ -63,7 +67,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
 
     Scaffold(
         topBar = {
-            TopAppBar(title = {
+            CenterAlignedTopAppBar(title = {
                 Text(
                     text = "Contacts",
                     style = MaterialTheme.typography.displaySmall,
