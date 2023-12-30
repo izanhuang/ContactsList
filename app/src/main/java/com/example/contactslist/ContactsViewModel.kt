@@ -13,9 +13,12 @@ class ContactsViewModel() : ViewModel() {
         _contacts.value = sortAlphabetically(_contacts.value)
     }
 
-    fun addContact(firstName: String, lastName: String, phoneNumber: String, gender: Gender) {
-        val listWithNewContact = _contacts.value + Contact(firstName, lastName, phoneNumber, gender)
+    fun addContact(firstName: String, lastName: String, phoneNumber: String, gender: Gender): Int {
+        val newContact = Contact(firstName, lastName, phoneNumber, gender)
+        val listWithNewContact = _contacts.value + newContact
         _contacts.value = sortAlphabetically(listWithNewContact)
+
+        return _contacts.value.indexOf(newContact)
     }
 
     private fun sortAlphabetically(

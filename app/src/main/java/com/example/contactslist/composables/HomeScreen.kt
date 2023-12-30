@@ -3,6 +3,7 @@ package com.example.contactslist.composables
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -25,6 +26,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.contactslist.ContactsViewModel
 import com.example.contactslist.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /*
 * List of contacts
@@ -41,8 +44,10 @@ import com.example.contactslist.R
 
 /**
  * To do
+ * - Adding of empty contact/validations
  * - Phone number regex/formatting, char limit
  * - Add padding bottom to "Add" contact button
+ * - Use IconAndOutlinedTextField composable?
  */
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -52,6 +57,8 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
     val contacts by viewModel.contacts.collectAsState()
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
+    val contactsListState = rememberLazyListState()
+
     var showBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -73,7 +80,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
         }
     ) { innerPadding ->
         Column(modifier.padding(innerPadding)) {
-            ContactList(contacts = contacts)
+            ContactList(contacts = contacts, listState = contactsListState)
         }
         if (showBottomSheet) {
             AddContactBottomSheet(
@@ -81,12 +88,16 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
                 scope = scope,
                 updateShowBottomSheet = { value -> showBottomSheet = value },
                 addContact = { firstName, lastName, phoneNumber, gender ->
-                    viewModel.addContact(
+                    val newContactIndex = viewModel.addContact(
                         firstName,
                         lastName,
                         phoneNumber,
                         gender
                     )
+                    scope.launch {
+                        delay(500)
+                        contactsListState.animateScrollToItem(newContactIndex)
+                    }
                 }
             )
         }
