@@ -1,7 +1,5 @@
-package com.example.contactslist.ui.theme
+package com.example.contactslist
 
-import com.example.contactslist.Contact
-import com.example.contactslist.Gender
 import kotlin.random.Random
 
 fun generateRandomPhoneNumber(): String {
@@ -17,7 +15,7 @@ fun getContacts(): List<Contact> {
     return listOf(
         Contact("Tom", "Hanks", generateRandomPhoneNumber(), Gender.Male),
         Contact("Jennifer", "Lawrence", generateRandomPhoneNumber(), Gender.Female),
-        Contact("Dwayne", "Johnson", generateRandomPhoneNumber(), Gender.Male),
+        Contact("Dwayne the Rock", "Johnson", generateRandomPhoneNumber(), Gender.Male),
         Contact("Emma", "Watson", generateRandomPhoneNumber(), Gender.Female),
         Contact("Leonardo", "DiCaprio", generateRandomPhoneNumber(), Gender.Male),
         Contact("Scarlett", "Johansson", generateRandomPhoneNumber(), Gender.Female),
