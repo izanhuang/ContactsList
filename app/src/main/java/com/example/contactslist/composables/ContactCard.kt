@@ -12,11 +12,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -30,7 +32,10 @@ fun ContactCard(
     val avatar =
         if (gender == Gender.FEMALE) R.drawable.round_avatar_female_24 else R.drawable.round_avatar_male_24
 
-    Card(modifier = modifier.fillMaxWidth()) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+    ) {
         Row(
             verticalAlignment = Alignment.Top,
             modifier = Modifier.padding(8.dp)
@@ -62,6 +67,7 @@ fun ContactCard(
                 )
             }
         }
+        Divider(thickness = 1.dp, color = MaterialTheme.colorScheme.tertiaryContainer)
     }
 }
 
