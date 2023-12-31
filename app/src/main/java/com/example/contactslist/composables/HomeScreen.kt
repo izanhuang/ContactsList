@@ -44,11 +44,6 @@ import kotlinx.coroutines.launch
  * Landscape orientation in add contact bottom sheet, cannot see "Add" button
  */
 
-/**
- * Questions
- * - Use IconAndOutlinedTextField composable?
- */
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
