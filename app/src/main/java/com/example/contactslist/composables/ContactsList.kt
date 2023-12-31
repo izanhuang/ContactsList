@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,6 +30,9 @@ fun ContactList(
                 phoneNumber = contact.phoneNumber,
                 gender = contact.gender
             )
+            if (contacts.indexOf(contact) < contacts.lastIndex) {
+                Divider(thickness = 1.dp, color = MaterialTheme.colorScheme.tertiaryContainer)
+            }
         }
     }
 }
