@@ -61,6 +61,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
     val contacts by viewModel.contacts.collectAsState()
     val newContact by viewModel.newContact.collectAsState()
     val isAddContactBottomSheetOpened by viewModel.isAddContactBottomSheetOpened.collectAsState()
+    val isNewContactValidPhoneNumber by viewModel.isNewContactValidPhoneNumber.collectAsState()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     val contactsListState = rememberLazyListState()
@@ -95,6 +96,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
             AddContactBottomSheet(
                 newContact = newContact,
                 updateNewContact = { value -> viewModel.updateNewContact(value) },
+                isNewContactValidPhoneNumber = isNewContactValidPhoneNumber,
                 sheetState = sheetState,
                 scope = scope,
                 updateShowBottomSheet = { value -> viewModel.toggleAddContactBottomSheet(value) },

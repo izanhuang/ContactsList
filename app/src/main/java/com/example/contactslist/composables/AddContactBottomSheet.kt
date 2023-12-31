@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 fun AddContactBottomSheet(
     newContact: Contact,
     updateNewContact: (Contact) -> Unit,
+    isNewContactValidPhoneNumber: Boolean,
     sheetState: SheetState,
     scope: CoroutineScope,
     updateShowBottomSheet: (Boolean) -> Unit,
@@ -38,6 +39,7 @@ fun AddContactBottomSheet(
             AddContactForm(
                 newContact,
                 updateNewContact,
+                isNewContactValidPhoneNumber,
                 sheetState,
                 scope,
                 updateShowBottomSheet,

@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 fun AddContactForm(
     newContact: Contact,
     updateNewContact: (Contact) -> Unit,
+    isNewContactValidPhoneNumber: Boolean,
     sheetState: SheetState,
     scope: CoroutineScope,
     updateShowBottomSheet: (Boolean) -> Unit,
@@ -39,9 +40,8 @@ fun AddContactForm(
 ) {
     val avatar =
         if (newContact.gender == Gender.MALE) R.drawable.round_avatar_male_24 else R.drawable.round_avatar_female_24
-    val isValidPhoneNumber = true
     val canSubmit =
-        newContact.firstName.isNotEmpty() && newContact.lastName.isNotEmpty() && isValidPhoneNumber && newContact.gender.javaClass == Gender::class.java
+        newContact.firstName.isNotEmpty() && newContact.lastName.isNotEmpty() && isNewContactValidPhoneNumber && newContact.gender.javaClass == Gender::class.java
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
