@@ -17,10 +17,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -44,13 +41,16 @@ import kotlinx.coroutines.launch
 
 /**
  * To do
- * - Adding of empty contact/validations
  * - Phone number regex/formatting, char limit
  */
 
 /**
+ * Issues
+ * Landscape orientation in add contact bottom sheet, cannot see "Add" button
+ */
+
+/**
  * Questions
- * - Add padding bottom to "Add" contact button
  * - Use IconAndOutlinedTextField composable?
  */
 
@@ -59,11 +59,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = viewModel()) {
     val contacts by viewModel.contacts.collectAsState()
+    val newContact by viewModel.newContact.collectAsState()
+    val isAddContactBottomSheetOpened by viewModel.isAddContactBottomSheetOpened.collectAsState()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     val contactsListState = rememberLazyListState()
-
-    var showBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -75,7 +75,12 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
             })
         },
         floatingActionButton = {
-            Button(onClick = { showBottomSheet = true }) {
+            Button(
+                onClick = {
+                    viewModel.clearNewContact()
+                    viewModel.toggleAddContactBottomSheet(true)
+                }
+            ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription = stringResource(R.string.add_contact)
@@ -86,13 +91,15 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
         Column(modifier.padding(innerPadding)) {
             ContactList(contacts = contacts, listState = contactsListState)
         }
-        if (showBottomSheet) {
+        if (isAddContactBottomSheetOpened) {
             AddContactBottomSheet(
+                newContact = newContact,
+                updateNewContact = { value -> viewModel.updateNewContact(value) },
                 sheetState = sheetState,
                 scope = scope,
-                updateShowBottomSheet = { value -> showBottomSheet = value },
-                addContact = { newContact ->
-                    val newContactIndex = viewModel.addContact(newContact)
+                updateShowBottomSheet = { value -> viewModel.toggleAddContactBottomSheet(value) },
+                addContact = {
+                    val newContactIndex = viewModel.addContact()
                     scope.launch {
                         delay(500)
                         contactsListState.animateScrollToItem(newContactIndex)

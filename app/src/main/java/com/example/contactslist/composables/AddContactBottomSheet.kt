@@ -16,10 +16,12 @@ import kotlinx.coroutines.CoroutineScope
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddContactBottomSheet(
+    newContact: Contact,
+    updateNewContact: (Contact) -> Unit,
     sheetState: SheetState,
     scope: CoroutineScope,
     updateShowBottomSheet: (Boolean) -> Unit,
-    addContact: (Contact) -> Unit,
+    addContact: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ModalBottomSheet(
@@ -33,7 +35,14 @@ fun AddContactBottomSheet(
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            AddContactForm(sheetState, scope, updateShowBottomSheet, addContact)
+            AddContactForm(
+                newContact,
+                updateNewContact,
+                sheetState,
+                scope,
+                updateShowBottomSheet,
+                addContact
+            )
         }
     }
 }

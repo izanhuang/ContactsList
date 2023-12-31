@@ -15,10 +15,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -33,14 +29,14 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddContactForm(
+    newContact: Contact,
+    updateNewContact: (Contact) -> Unit,
     sheetState: SheetState,
     scope: CoroutineScope,
     updateShowBottomSheet: (Boolean) -> Unit,
-    addContact: (Contact) -> Unit,
+    addContact: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var newContact by remember { mutableStateOf(Contact("", "", "", Gender.MALE)) }
-
     val avatar =
         if (newContact.gender == Gender.MALE) R.drawable.round_avatar_male_24 else R.drawable.round_avatar_female_24
     val isValidPhoneNumber = true
@@ -60,7 +56,7 @@ fun AddContactForm(
                 OutlinedTextField(
                     value = newContact.firstName,
                     onValueChange = { value ->
-                        newContact = newContact.copy(firstName = value.trimStart().trimEnd())
+                        updateNewContact(newContact.copy(firstName = value.trimStart().trimEnd()))
                     },
                     label = { Text("First name") },
                     modifier = Modifier.fillMaxWidth()
@@ -68,7 +64,7 @@ fun AddContactForm(
                 OutlinedTextField(
                     value = newContact.lastName,
                     onValueChange = { value ->
-                        newContact = newContact.copy(lastName = value.trimStart().trimEnd())
+                        updateNewContact(newContact.copy(lastName = value.trimStart().trimEnd()))
                     },
                     label = { Text("Last name") },
                     modifier = Modifier.fillMaxWidth()
@@ -83,7 +79,9 @@ fun AddContactForm(
             )
             OutlinedTextField(
                 value = newContact.phoneNumber,
-                onValueChange = { value -> newContact = newContact.copy(phoneNumber = value.trimStart().trimEnd()) },
+                onValueChange = { value ->
+                    updateNewContact(newContact.copy(phoneNumber = value.trimStart().trimEnd()))
+                },
                 label = { Text("Phone number") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -97,18 +95,20 @@ fun AddContactForm(
                 contentDescription = stringResource(R.string.avatar)
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(selected = newContact.gender == Gender.MALE, onClick = { newContact = newContact.copy(gender = Gender.MALE) })
+                RadioButton(
+                    selected = newContact.gender == Gender.MALE,
+                    onClick = { updateNewContact(newContact.copy(gender = Gender.MALE)) })
                 Text("Male")
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(selected = newContact.gender == Gender.FEMALE,
-                    onClick = { newContact = newContact.copy(gender = Gender.FEMALE) })
+                    onClick = { updateNewContact(newContact.copy(gender = Gender.FEMALE)) })
                 Text(text = "Female")
             }
         }
         Button(
             onClick = {
-                addContact(newContact)
+                addContact()
                 scope.launch { sheetState.hide() }.invokeOnCompletion {
                     if (!sheetState.isVisible) {
                         updateShowBottomSheet(false)
