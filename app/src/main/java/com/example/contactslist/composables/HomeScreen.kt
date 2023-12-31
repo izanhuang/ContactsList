@@ -40,11 +40,6 @@ import kotlinx.coroutines.launch
 */
 
 /**
- * To do
- * - Phone number regex/formatting, char limit
- */
-
-/**
  * Issues
  * Landscape orientation in add contact bottom sheet, cannot see "Add" button
  */

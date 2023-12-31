@@ -42,6 +42,16 @@ class ContactsViewModel() : ViewModel() {
     }
 
     fun addContact(): Int {
+        val newContactFirstName =
+            _newContact.value.firstName.replaceFirstChar { char -> char.uppercase() }
+        val newContactLastName =
+            _newContact.value.lastName.replaceFirstChar { char -> char.uppercase() }
+
+        _newContact.value =
+            _newContact.value.copy(
+                firstName = newContactFirstName,
+                lastName = newContactLastName
+            )
         val listWithNewContact = _contacts.value + _newContact.value
         _contacts.value = sortAlphabetically(listWithNewContact)
 
