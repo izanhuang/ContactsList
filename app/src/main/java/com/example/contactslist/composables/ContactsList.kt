@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -24,13 +24,13 @@ fun ContactList(
         state = listState,
         modifier = modifier
     ) {
-        items(contacts) { contact ->
+        itemsIndexed(contacts) { index, contact ->
             ContactCard(
                 fullName = contact.fullName,
                 phoneNumber = contact.phoneNumber,
                 gender = contact.gender
             )
-            if (contacts.indexOf(contact) < contacts.lastIndex) {
+            if (index < contacts.lastIndex) {
                 Divider(thickness = 1.dp, color = MaterialTheme.colorScheme.tertiaryContainer)
             }
         }

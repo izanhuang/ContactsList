@@ -1,12 +1,14 @@
 package com.example.contactslist
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
 class ContactsViewModel() : ViewModel() {
-    private val _contacts = MutableStateFlow(getContacts())
+    private val _contacts: MutableStateFlow<List<Contact>> = MutableStateFlow(listOf())
     private val _newContact = MutableStateFlow(Contact())
     private val _isAddContactBottomSheetOpened = MutableStateFlow(false)
     private val _isNewContactValidPhoneNumber =
@@ -19,7 +21,9 @@ class ContactsViewModel() : ViewModel() {
     val isNewContactValidPhoneNumber: StateFlow<Boolean> = _isNewContactValidPhoneNumber
 
     init {
-        _contacts.value = sortAlphabetically(_contacts.value)
+        viewModelScope.launch {
+            _contacts.value = sortAlphabetically(getContacts())
+        }
     }
 
     fun toggleAddContactBottomSheet(shouldOpen: Boolean) {
