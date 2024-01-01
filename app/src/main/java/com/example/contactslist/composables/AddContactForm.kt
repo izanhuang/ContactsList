@@ -82,6 +82,7 @@ fun AddContactForm(
                 onValueChange = { value ->
                     updateNewContact(newContact.copy(phoneNumber = value.trimStart().trimEnd()))
                 },
+                placeholder = { Text("1-234-567-8900") },
                 label = { Text("Phone number") },
                 modifier = Modifier.fillMaxWidth()
             )
