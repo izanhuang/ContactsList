@@ -1,12 +1,21 @@
 package com.example.contactslist
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "contacts")
 data class Contact(
-    val firstName: String = "",
-    val lastName: String = "",
-    val phoneNumber: String = "",
-    val gender: Gender = Gender.MALE
+    @PrimaryKey(autoGenerate = true)
+    val id: Long? = null,
+    @ColumnInfo(name = "first_name") val firstName: String = "",
+    @ColumnInfo(name = "last_name") val lastName: String = "",
+    @ColumnInfo(name = "phone_number") val phoneNumber: String = "",
+    @ColumnInfo(name = "gender") val gender: Gender = Gender.MALE,
 ) {
-    val fullName = "$firstName $lastName"
+    fun getFullName(): String {
+        return "$firstName $lastName"
+    }
 }
 
 enum class Gender {

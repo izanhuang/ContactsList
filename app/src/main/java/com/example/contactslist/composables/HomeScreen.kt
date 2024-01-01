@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -23,8 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.contactslist.ContactsViewModel
 import com.example.contactslist.R
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /*
 * List of contacts
@@ -50,12 +49,19 @@ import kotlinx.coroutines.launch
 fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = viewModel()) {
     val contacts by viewModel.contacts.collectAsState()
     val newContact by viewModel.newContact.collectAsState()
+    val contactsListScrollIndex by viewModel.contactsListScrollIndex.collectAsState()
     val isAddContactBottomSheetOpened by viewModel.isAddContactBottomSheetOpened.collectAsState()
     val isNewContactValidPhoneNumber by viewModel.isNewContactValidPhoneNumber.collectAsState()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     val contactsListState = rememberLazyListState()
 
+    LaunchedEffect(contactsListScrollIndex) {
+        contactsListScrollIndex?.let { it ->
+            contactsListState.animateScrollToItem(it)
+            viewModel.consumeScroll()
+        }
+    }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(title = {
@@ -68,7 +74,6 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
         floatingActionButton = {
             Button(
                 onClick = {
-                    viewModel.clearNewContact()
                     viewModel.toggleAddContactBottomSheet(true)
                 }
             ) {
@@ -90,13 +95,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
                 sheetState = sheetState,
                 scope = scope,
                 updateShowBottomSheet = { value -> viewModel.toggleAddContactBottomSheet(value) },
-                addContact = {
-                    val newContactIndex = viewModel.addContact()
-                    scope.launch {
-                        delay(500)
-                        contactsListState.animateScrollToItem(newContactIndex)
-                    }
-                }
+                addContact = { viewModel.addContact() }
             )
         }
     }

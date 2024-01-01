@@ -26,7 +26,7 @@ fun ContactList(
     ) {
         itemsIndexed(contacts) { index, contact ->
             ContactCard(
-                fullName = contact.fullName,
+                fullName = contact.getFullName(),
                 phoneNumber = contact.phoneNumber,
                 gender = contact.gender
             )
