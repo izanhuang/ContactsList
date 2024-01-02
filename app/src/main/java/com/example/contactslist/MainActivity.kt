@@ -15,9 +15,9 @@ import com.example.contactslist.ui.theme.ContactsListTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val db = Room.databaseBuilder(
-            applicationContext, AppDatabase::class.java, "app-database"
-        ).build()
+        val db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "app-database")
+            .createFromAsset("databases/contacts.db")
+            .build()
         setContent {
             ContactsListTheme {
                 // A surface container using the 'background' color from the theme

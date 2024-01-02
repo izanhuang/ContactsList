@@ -17,7 +17,3 @@ data class Contact(
         return "$firstName $lastName"
     }
 }
-
-enum class Gender {
-    FEMALE, MALE
-}
