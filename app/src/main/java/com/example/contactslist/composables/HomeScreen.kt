@@ -53,7 +53,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
     val contactsListState = rememberLazyListState()
 
     LaunchedEffect(contactsScreenState.value.contactsListScrollIndex) {
-        contactsScreenState.value.contactsListScrollIndex?.let { it ->
+        contactsScreenState.value.contactsListScrollIndex?.let {
             contactsListState.animateScrollToItem(it)
             viewModel.consumeScroll()
         }
@@ -90,7 +90,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
                 }
             )
         }
-        contactsScreenState.value.currentlyOpenSheetState?.let { it ->
+        contactsScreenState.value.currentlyOpenSheetState?.let {
             when (it) {
                 BottomSheetStateType.ADD_CONTACT ->
                     BasicBottomSheet(
