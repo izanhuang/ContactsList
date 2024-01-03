@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ fun ContactCard(
     fullName: String,
     phoneNumber: String,
     gender: Gender,
+    hasBottomBorder: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -42,7 +44,7 @@ fun ContactCard(
     ) {
         Row(
             verticalAlignment = Alignment.Top,
-            modifier = Modifier.padding(8.dp, 2.dp, 8.dp, 10.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Card(
                 shape = CircleShape,
@@ -70,6 +72,13 @@ fun ContactCard(
                     text = phoneNumber
                 )
             }
+        }
+        if (hasBottomBorder) {
+            Divider(
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.tertiaryContainer,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
         }
     }
 }
