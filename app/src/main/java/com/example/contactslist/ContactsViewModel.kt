@@ -3,6 +3,8 @@ package com.example.contactslist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.contactslist.database.AppDatabase
+import com.example.contactslist.types.BottomSheetStateType
+import com.example.contactslist.types.Gender
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,42 +12,39 @@ import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
 class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
-    private val _contacts: MutableStateFlow<List<Contact>> = MutableStateFlow(listOf())
-    private val _newContact : MutableStateFlow<Contact> = MutableStateFlow(Contact())
-    private val _isAddContactBottomSheetOpened: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val _isNewContactValidPhoneNumber: MutableStateFlow<Boolean> =
-        MutableStateFlow(isValidPhoneNumber(_newContact.value.phoneNumber))
-    private val _contactsListScrollIndex: MutableStateFlow<Int?> = MutableStateFlow(null)
+    private val _contactsScreenState: MutableStateFlow<ContactScreenState> = MutableStateFlow(
+        ContactScreenState(
+            contacts = listOf(),
+            newContact = Contact(),
+            isNewContactValid = false,
+            contactToUpdate = Contact(),
+            isContactToUpdateValid = false,
+            contactsListScrollIndex = null,
+            currentlyOpenSheetState = null,
+        )
+    )
 
-    val contacts: StateFlow<List<Contact>> = _contacts
-    val newContact: StateFlow<Contact> = _newContact
-    val contactsListScrollIndex: StateFlow<Int?> = _contactsListScrollIndex
-
-    val isAddContactBottomSheetOpened: StateFlow<Boolean> = _isAddContactBottomSheetOpened
-    val isNewContactValidPhoneNumber: StateFlow<Boolean> = _isNewContactValidPhoneNumber
+    val contactsScreenState: StateFlow<ContactScreenState> = _contactsScreenState
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             val contactDao = db.contactDao()
-            _contacts.value = contactDao.getAll()
+            _contactsScreenState.value = _contactsScreenState.value.copy(
+                contacts = contactDao.getAll()
+            )
         }
     }
 
     fun consumeScroll() {
-        _contactsListScrollIndex.value = null
+        _contactsScreenState.value = _contactsScreenState.value.copy(
+            contactsListScrollIndex = null
+        )
     }
 
-    fun toggleAddContactBottomSheet(shouldOpen: Boolean) {
-        _isAddContactBottomSheetOpened.value = shouldOpen
-    }
-
-    private fun clearNewContact() {
-        _newContact.value = Contact()
-    }
-
-    fun updateNewContact(newContact: Contact) {
-        _newContact.value = newContact
-        _isNewContactValidPhoneNumber.value = isValidPhoneNumber(newContact.phoneNumber)
+    fun toggleAddContactBottomSheet(sheetType: BottomSheetStateType?) {
+        _contactsScreenState.value = _contactsScreenState.value.copy(
+            currentlyOpenSheetState = sheetType
+        )
     }
 
     private fun isValidPhoneNumber(phoneNumber: String): Boolean {
@@ -54,24 +53,66 @@ class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
         return Pattern.matches(pattern, phoneNumber)
     }
 
+    private fun isValidContact(contact: Contact): Boolean {
+        return contact.firstName.isNotEmpty() && contact.lastName.isNotEmpty() && isValidPhoneNumber(
+            contact.phoneNumber
+        ) && contact.gender.javaClass == Gender::class.java
+
+    }
+
+    private fun clearNewContact() {
+        _contactsScreenState.value = _contactsScreenState.value.copy(
+            newContact = Contact()
+        )
+    }
+
+    fun saveNewContact(newContact: Contact) {
+        _contactsScreenState.value = _contactsScreenState.value.copy(
+            newContact = newContact,
+            isNewContactValid = isValidContact(newContact)
+        )
+    }
+
+    private fun clearContactToUpdate() {
+        _contactsScreenState.value = _contactsScreenState.value.copy(
+            contactToUpdate = Contact()
+        )
+    }
+
+    fun saveContactToUpdate(contactToUpdate: Contact) {
+        _contactsScreenState.value = _contactsScreenState.value.copy(
+            contactToUpdate = contactToUpdate,
+            isContactToUpdateValid = isValidContact(contactToUpdate)
+        )
+    }
+
     fun addContact() {
         val newContactFirstName =
-            _newContact.value.firstName.replaceFirstChar { char -> char.uppercase() }
+            _contactsScreenState.value.newContact.firstName.replaceFirstChar { char -> char.uppercase() }
         val newContactLastName =
-            _newContact.value.lastName.replaceFirstChar { char -> char.uppercase() }
+            _contactsScreenState.value.newContact.lastName.replaceFirstChar { char -> char.uppercase() }
 
         viewModelScope.launch(Dispatchers.IO) {
             val contactsDao = db.contactDao()
             val newContactRowId = contactsDao.insertContacts(
-                _newContact.value.copy(
+                _contactsScreenState.value.newContact.copy(
                     firstName = newContactFirstName,
                     lastName = newContactLastName
                 )
             )
+            _contactsScreenState.value = _contactsScreenState.value.copy(
+                contacts = contactsDao.getAll()
+            )
             val addedContact = contactsDao.getContactById(newContactRowId)
-            _contacts.value = contactsDao.getAll()
-            _contactsListScrollIndex.value = _contacts.value.indexOf(addedContact)
+            val indexOfAddedContact = _contactsScreenState.value.contacts.indexOf(addedContact)
+            _contactsScreenState.value = _contactsScreenState.value.copy(
+                contactsListScrollIndex = indexOfAddedContact
+            )
             clearNewContact()
         }
+    }
+
+    fun editContact() {
+        // TODO
     }
 }

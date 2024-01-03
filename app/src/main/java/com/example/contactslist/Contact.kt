@@ -3,6 +3,7 @@ package com.example.contactslist
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.contactslist.types.Gender
 
 @Entity(tableName = "contacts")
 data class Contact(

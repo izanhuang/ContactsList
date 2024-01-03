@@ -17,13 +17,12 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.contactslist.ContactsViewModel
 import com.example.contactslist.R
+import com.example.contactslist.types.BottomSheetStateType
 
 /*
 * List of contacts
@@ -47,17 +46,12 @@ import com.example.contactslist.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = viewModel()) {
-    val contacts by viewModel.contacts.collectAsState()
-    val newContact by viewModel.newContact.collectAsState()
-    val contactsListScrollIndex by viewModel.contactsListScrollIndex.collectAsState()
-    val isAddContactBottomSheetOpened by viewModel.isAddContactBottomSheetOpened.collectAsState()
-    val isNewContactValidPhoneNumber by viewModel.isNewContactValidPhoneNumber.collectAsState()
+    val contactsScreenState = viewModel.contactsScreenState.collectAsState()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
     val contactsListState = rememberLazyListState()
 
-    LaunchedEffect(contactsListScrollIndex) {
-        contactsListScrollIndex?.let { it ->
+    LaunchedEffect(contactsScreenState.value.contactsListScrollIndex) {
+        contactsScreenState.value.contactsListScrollIndex?.let { it ->
             contactsListState.animateScrollToItem(it)
             viewModel.consumeScroll()
         }
@@ -74,7 +68,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
         floatingActionButton = {
             Button(
                 onClick = {
-                    viewModel.toggleAddContactBottomSheet(true)
+                    viewModel.toggleAddContactBottomSheet(BottomSheetStateType.ADD_CONTACT)
                 }
             ) {
                 Icon(
@@ -85,18 +79,33 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
         }
     ) { innerPadding ->
         Column(modifier.padding(innerPadding)) {
-            ContactList(contacts = contacts, listState = contactsListState)
+            ContactList(contacts = contactsScreenState.value.contacts, listState = contactsListState)
         }
-        if (isAddContactBottomSheetOpened) {
-            AddContactBottomSheet(
-                newContact = newContact,
-                updateNewContact = { value -> viewModel.updateNewContact(value) },
-                isNewContactValidPhoneNumber = isNewContactValidPhoneNumber,
-                sheetState = sheetState,
-                scope = scope,
-                updateShowBottomSheet = { value -> viewModel.toggleAddContactBottomSheet(value) },
-                addContact = { viewModel.addContact() }
-            )
+        contactsScreenState.value.currentlyOpenSheetState?.let{ it ->
+            when(it) {
+                BottomSheetStateType.ADD_CONTACT ->
+                    BasicBottomSheet(
+                        contact = contactsScreenState.value.newContact,
+                        updateContact = { value -> viewModel.saveNewContact(value) },
+                        isContactValid = contactsScreenState.value.isNewContactValid,
+                        buttonText = "Add",
+                        sheetTitle = "Add contact",
+                        sheetState = sheetState,
+                        closeBottomSheet = { viewModel.toggleAddContactBottomSheet(null) },
+                        onButtonClick = { viewModel.addContact() }
+                    )
+                BottomSheetStateType.EDIT_CONTACT ->
+                    BasicBottomSheet(
+                        contact = contactsScreenState.value.contactToUpdate,
+                        updateContact = { value -> viewModel.saveContactToUpdate(value) },
+                        isContactValid = contactsScreenState.value.isContactToUpdateValid,
+                        buttonText = "Save",
+                        sheetTitle = "Edit contact",
+                        sheetState = sheetState,
+                        closeBottomSheet = { viewModel.toggleAddContactBottomSheet(null) },
+                        onButtonClick = { viewModel.editContact() }
+                    )
+            }
         }
     }
 }

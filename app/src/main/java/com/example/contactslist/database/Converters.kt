@@ -1,7 +1,8 @@
 package com.example.contactslist.database
 
 import androidx.room.TypeConverter
-import com.example.contactslist.Gender
+import com.example.contactslist.types.Gender
+
 class Converters {
     @TypeConverter
     fun toGender(value: String) = enumValueOf<Gender>(value)
