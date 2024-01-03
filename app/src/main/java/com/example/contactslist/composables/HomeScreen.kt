@@ -79,14 +79,21 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
         }
     ) { innerPadding ->
         Column(modifier.padding(innerPadding)) {
-            ContactList(contacts = contactsScreenState.value.contacts, listState = contactsListState)
+            ContactList(
+                contacts = contactsScreenState.value.contacts,
+                listState = contactsListState,
+                onCardClick = { contact ->
+                    viewModel.updateContactToUpdate(contact)
+                    viewModel.toggleAddContactBottomSheet(BottomSheetStateType.EDIT_CONTACT)
+                }
+            )
         }
         contactsScreenState.value.currentlyOpenSheetState?.let{ it ->
             when(it) {
                 BottomSheetStateType.ADD_CONTACT ->
                     BasicBottomSheet(
                         contact = contactsScreenState.value.newContact,
-                        updateContact = { value -> viewModel.saveNewContact(value) },
+                        updateContact = { value -> viewModel.updateNewContact(value) },
                         isContactValid = contactsScreenState.value.isNewContactValid,
                         buttonText = "Add",
                         sheetTitle = "Add contact",
@@ -97,7 +104,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
                 BottomSheetStateType.EDIT_CONTACT ->
                     BasicBottomSheet(
                         contact = contactsScreenState.value.contactToUpdate,
-                        updateContact = { value -> viewModel.saveContactToUpdate(value) },
+                        updateContact = { value -> viewModel.updateContactToUpdate(value) },
                         isContactValid = contactsScreenState.value.isContactToUpdateValid,
                         buttonText = "Save",
                         sheetTitle = "Edit contact",

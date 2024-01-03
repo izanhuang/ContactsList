@@ -1,5 +1,6 @@
 package com.example.contactslist.composables
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,13 +30,14 @@ fun ContactCard(
     fullName: String,
     phoneNumber: String,
     gender: Gender,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val avatar =
         if (gender == Gender.FEMALE) R.drawable.round_avatar_female_24 else R.drawable.round_avatar_male_24
 
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
     ) {
         Row(

@@ -16,6 +16,7 @@ import com.example.contactslist.Contact
 fun ContactList(
     contacts: List<Contact>,
     listState: LazyListState,
+    onCardClick: (Contact) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -28,7 +29,8 @@ fun ContactList(
             ContactCard(
                 fullName = contact.getFullName(),
                 phoneNumber = contact.phoneNumber,
-                gender = contact.gender
+                gender = contact.gender,
+                onClick = { onCardClick(contact) }
             )
             if (index < contacts.lastIndex) {
                 Divider(thickness = 1.dp, color = MaterialTheme.colorScheme.tertiaryContainer)

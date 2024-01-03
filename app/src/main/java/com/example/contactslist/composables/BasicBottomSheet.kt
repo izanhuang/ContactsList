@@ -1,7 +1,9 @@
 package com.example.contactslist.composables
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,7 +39,10 @@ fun BasicBottomSheet(
         modifier = modifier
     ) {
         Column(modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 16.dp)) {
-            Row {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text(
                     sheetTitle,
                     style = MaterialTheme.typography.headlineMedium,

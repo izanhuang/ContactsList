@@ -66,7 +66,7 @@ class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
         )
     }
 
-    fun saveNewContact(newContact: Contact) {
+    fun updateNewContact(newContact: Contact) {
         _contactsScreenState.value = _contactsScreenState.value.copy(
             newContact = newContact,
             isNewContactValid = isValidContact(newContact)
@@ -79,7 +79,7 @@ class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
         )
     }
 
-    fun saveContactToUpdate(contactToUpdate: Contact) {
+    fun updateContactToUpdate(contactToUpdate: Contact) {
         _contactsScreenState.value = _contactsScreenState.value.copy(
             contactToUpdate = contactToUpdate,
             isContactToUpdateValid = isValidContact(contactToUpdate)
@@ -113,6 +113,29 @@ class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
     }
 
     fun editContact() {
-        // TODO
+        val contactToUpdateFirstName =
+            _contactsScreenState.value.contactToUpdate.firstName.replaceFirstChar { char -> char.uppercase() }
+        val contactToUpdateLastName =
+            _contactsScreenState.value.contactToUpdate.lastName.replaceFirstChar { char -> char.uppercase() }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val contactsDao = db.contactDao()
+            contactsDao.updateContacts(
+                _contactsScreenState.value.contactToUpdate.copy(
+                    firstName = contactToUpdateFirstName,
+                    lastName = contactToUpdateLastName
+                )
+            )
+            val contactToUpdateRowId = _contactsScreenState.value.contactToUpdate.id
+            _contactsScreenState.value = _contactsScreenState.value.copy(
+                contacts = contactsDao.getAll()
+            )
+            val contactToUpdate = contactToUpdateRowId?.let { contactsDao.getContactById(it) }
+            val indexOfContactToUpdate = _contactsScreenState.value.contacts.indexOf(contactToUpdate)
+            _contactsScreenState.value = _contactsScreenState.value.copy(
+                contactsListScrollIndex = if (indexOfContactToUpdate != -1) indexOfContactToUpdate else 0
+            )
+            clearContactToUpdate()
+        }
     }
 }
