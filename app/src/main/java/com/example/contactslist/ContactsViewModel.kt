@@ -138,4 +138,15 @@ class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
             clearContactToUpdate()
         }
     }
+
+    fun removeContact() {
+        viewModelScope.launch {
+            val contactDao = db.contactDao()
+            contactDao.deleteContacts(_contactsScreenState.value.contactToUpdate)
+            _contactsScreenState.value = _contactsScreenState.value.copy(
+                contacts = contactDao.getAll()
+            )
+            clearContactToUpdate()
+        }
+    }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -19,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.contactslist.ContactsViewModel
 import com.example.contactslist.R
@@ -88,8 +90,8 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
                 }
             )
         }
-        contactsScreenState.value.currentlyOpenSheetState?.let{ it ->
-            when(it) {
+        contactsScreenState.value.currentlyOpenSheetState?.let { it ->
+            when (it) {
                 BottomSheetStateType.ADD_CONTACT ->
                     BasicBottomSheet(
                         contact = contactsScreenState.value.newContact,
@@ -101,6 +103,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
                         closeBottomSheet = { viewModel.toggleAddContactBottomSheet(null) },
                         onButtonClick = { viewModel.addContact() }
                     )
+
                 BottomSheetStateType.EDIT_CONTACT ->
                     BasicBottomSheet(
                         contact = contactsScreenState.value.contactToUpdate,
@@ -111,7 +114,18 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
                         sheetState = sheetState,
                         closeBottomSheet = { viewModel.toggleAddContactBottomSheet(null) },
                         onButtonClick = { viewModel.editContact() }
-                    )
+                    ) {
+                        Button(
+                            onClick = {
+                                viewModel.removeContact()
+                                viewModel.toggleAddContactBottomSheet(null)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                            modifier = Modifier.padding(top = 24.dp)
+                        ) {
+                            Text("Delete contact")
+                        }
+                    }
             }
         }
     }

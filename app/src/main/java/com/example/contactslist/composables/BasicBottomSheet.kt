@@ -30,6 +30,7 @@ fun BasicBottomSheet(
     closeBottomSheet: () -> Unit,
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
+    content: @Composable () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
 
@@ -65,6 +66,7 @@ fun BasicBottomSheet(
                 contact,
                 updateContact,
             )
+            content()
         }
     }
 }
