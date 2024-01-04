@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.example.contactslist.database.AppDatabase
+import com.example.contactslist.database.ContactDao
 import com.example.contactslist.types.BottomSheetStateType
 import com.example.contactslist.types.Gender
 import kotlinx.coroutines.Dispatchers
@@ -32,9 +33,7 @@ class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
     init {
         viewModelScope.launch(Dispatchers.IO) {
             val contactDao = db.contactDao()
-            _contactsScreenState.value = _contactsScreenState.value.copy(
-                contacts = contactDao.getAll()
-            )
+            refreshContacts(contactDao)
         }
     }
 
@@ -89,6 +88,12 @@ class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
         )
     }
 
+    private suspend fun refreshContacts(contactsDao: ContactDao) {
+        _contactsScreenState.value = _contactsScreenState.value.copy(
+            contacts = contactsDao.getAll()
+        )
+    }
+
     fun addContact() {
         val newContactFirstName =
             _contactsScreenState.value.newContact.firstName.replaceFirstChar { char -> char.uppercase() }
@@ -103,9 +108,7 @@ class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
                     lastName = newContactLastName
                 )
             )
-            _contactsScreenState.value = _contactsScreenState.value.copy(
-                contacts = contactsDao.getAll()
-            )
+            refreshContacts(contactsDao)
             val addedContact = contactsDao.getContactById(newContactRowId)
             val indexOfAddedContact = _contactsScreenState.value.contacts.indexOf(addedContact)
             _contactsScreenState.value = _contactsScreenState.value.copy(
@@ -130,9 +133,7 @@ class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
                 )
             )
             val contactToUpdateRowId = _contactsScreenState.value.contactToUpdate.id
-            _contactsScreenState.value = _contactsScreenState.value.copy(
-                contacts = contactsDao.getAll()
-            )
+            refreshContacts(contactsDao)
             val contactToUpdate = contactToUpdateRowId?.let { contactsDao.getContactById(it) }
             val indexOfContactToUpdate =
                 _contactsScreenState.value.contacts.indexOf(contactToUpdate)
@@ -144,12 +145,10 @@ class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
     }
 
     fun removeContact() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val contactDao = db.contactDao()
             contactDao.deleteContacts(_contactsScreenState.value.contactToUpdate)
-            _contactsScreenState.value = _contactsScreenState.value.copy(
-                contacts = contactDao.getAll()
-            )
+            refreshContacts(contactDao)
             clearContactToUpdate()
         }
     }

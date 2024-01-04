@@ -10,7 +10,7 @@ import com.example.contactslist.Contact
 
 @Dao
 interface ContactDao {
-    @Query("SELECT * FROM contacts ORDER BY first_name, last_name ASC")
+    @Query("SELECT * FROM contacts ORDER BY LOWER(first_name), LOWER(last_name) ASC")
     suspend fun getAll(): List<Contact>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
