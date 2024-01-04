@@ -134,7 +134,8 @@ class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
                 contacts = contactsDao.getAll()
             )
             val contactToUpdate = contactToUpdateRowId?.let { contactsDao.getContactById(it) }
-            val indexOfContactToUpdate = _contactsScreenState.value.contacts.indexOf(contactToUpdate)
+            val indexOfContactToUpdate =
+                _contactsScreenState.value.contacts.indexOf(contactToUpdate)
             _contactsScreenState.value = _contactsScreenState.value.copy(
                 contactsListScrollIndex = if (indexOfContactToUpdate != -1) indexOfContactToUpdate else 0
             )
@@ -154,11 +155,15 @@ class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
     }
 }
 
-class ContactViewModelFactory(private val application: Application): ViewModelProvider.Factory {
+class ContactViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ContactsViewModel::class.java)) {
-            val db = Room.databaseBuilder(application.applicationContext, AppDatabase::class.java, "app-database")
+            val db = Room.databaseBuilder(
+                application.applicationContext,
+                AppDatabase::class.java,
+                "app-database"
+            )
                 .createFromAsset("databases/contacts.db")
                 .build()
             @Suppress("UNCHECKED_CAST")
