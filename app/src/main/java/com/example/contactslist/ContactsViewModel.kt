@@ -1,7 +1,10 @@
 package com.example.contactslist
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.room.Room
 import com.example.contactslist.database.AppDatabase
 import com.example.contactslist.types.BottomSheetStateType
 import com.example.contactslist.types.Gender
@@ -60,7 +63,7 @@ class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
 
     }
 
-    private fun clearNewContact() {
+    fun clearNewContact() {
         _contactsScreenState.value = _contactsScreenState.value.copy(
             newContact = Contact()
         )
@@ -148,5 +151,19 @@ class ContactsViewModel(private val db: AppDatabase) : ViewModel() {
             )
             clearContactToUpdate()
         }
+    }
+}
+
+class ContactViewModelFactory(private val application: Application): ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ContactsViewModel::class.java)) {
+            val db = Room.databaseBuilder(application.applicationContext, AppDatabase::class.java, "app-database")
+                .createFromAsset("databases/contacts.db")
+                .build()
+            @Suppress("UNCHECKED_CAST")
+            return ContactsViewModel(db) as T
+        }
+        throw IllegalStateException("Unable to construct view model")
     }
 }

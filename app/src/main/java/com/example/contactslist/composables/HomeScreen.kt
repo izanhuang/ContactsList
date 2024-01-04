@@ -49,7 +49,7 @@ import com.example.contactslist.types.BottomSheetStateType
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = viewModel()) {
     val contactsScreenState = viewModel.contactsScreenState.collectAsState()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val contactsListState = rememberLazyListState()
 
     LaunchedEffect(contactsScreenState.value.contactsListScrollIndex) {
@@ -99,8 +99,11 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
                         isContactValid = contactsScreenState.value.isNewContactValid,
                         buttonText = "Add",
                         sheetTitle = "Add contact",
-                        sheetState = sheetState,
-                        closeBottomSheet = { viewModel.toggleAddContactBottomSheet(null) },
+                        sheetState = bottomSheetState,
+                        closeBottomSheet = {
+                            viewModel.clearNewContact()
+                            viewModel.toggleAddContactBottomSheet(null)
+                        },
                         onButtonClick = { viewModel.addContact() }
                     )
 
@@ -111,7 +114,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: ContactsViewModel = vie
                         isContactValid = contactsScreenState.value.isContactToUpdateValid,
                         buttonText = "Save",
                         sheetTitle = "Edit contact",
-                        sheetState = sheetState,
+                        sheetState = bottomSheetState,
                         closeBottomSheet = { viewModel.toggleAddContactBottomSheet(null) },
                         onButtonClick = { viewModel.editContact() }
                     ) {
